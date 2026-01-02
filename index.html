@@ -448,26 +448,43 @@
         
         const initSounds = function(scene) {
             // Background music - Free music from Pixabay
-            backgroundMusic = new BABYLON.Sound("bgMusic", "https://cdn.pixabay.com/download/audio/2022/03/10/audio_2d8e579ba8.mp3", scene, null, {
-                loop: true,
-                autoplay: false,
-                volume: 0.3
-            });
+            // Note: External audio URLs may have CORS or availability issues
+            try {
+                backgroundMusic = new BABYLON.Sound("bgMusic", "https://cdn.pixabay.com/download/audio/2022/03/10/audio_2d8e579ba8.mp3", scene, null, {
+                    loop: true,
+                    autoplay: false,
+                    volume: 0.3
+                });
+            } catch (e) {
+                console.warn('Could not load background music:', e);
+            }
             
             // Flap sound - Simple beep
-            flapSound = new BABYLON.Sound("flap", "https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3", scene, null, {
-                volume: 0.5
-            });
+            try {
+                flapSound = new BABYLON.Sound("flap", "https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3", scene, null, {
+                    volume: 0.5
+                });
+            } catch (e) {
+                console.warn('Could not load flap sound:', e);
+            }
             
             // Score sound
-            scoreSound = new BABYLON.Sound("score", "https://cdn.pixabay.com/download/audio/2021/08/04/audio_0694722a30.mp3", scene, null, {
-                volume: 0.6
-            });
+            try {
+                scoreSound = new BABYLON.Sound("score", "https://cdn.pixabay.com/download/audio/2021/08/04/audio_0694722a30.mp3", scene, null, {
+                    volume: 0.6
+                });
+            } catch (e) {
+                console.warn('Could not load score sound:', e);
+            }
             
             // Game over sound
-            gameOverSound = new BABYLON.Sound("gameover", "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c3c5d0eb28.mp3", scene, null, {
-                volume: 0.5
-            });
+            try {
+                gameOverSound = new BABYLON.Sound("gameover", "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c3c5d0eb28.mp3", scene, null, {
+                    volume: 0.5
+                });
+            } catch (e) {
+                console.warn('Could not load game over sound:', e);
+            }
         };
         
         const toggleMusic = function() {
@@ -540,8 +557,12 @@
                 document.getElementById('rewardText').innerText = `You unlocked Level ${currentLevel + 1}!`;
                 document.getElementById('rewardPopup').style.display = 'block';
                 
-                // Save progress to localStorage
-                localStorage.setItem('unlockedLevels', unlockedLevels);
+                // Save progress to localStorage with error handling
+                try {
+                    localStorage.setItem('unlockedLevels', unlockedLevels);
+                } catch (e) {
+                    console.warn('Could not save progress to localStorage:', e);
+                }
             } else {
                 document.getElementById('rewardText').innerText = 'You completed all levels! You are a master!';
                 document.getElementById('rewardPopup').style.display = 'block';
@@ -554,7 +575,14 @@
             }
             
             particleSystem = new BABYLON.ParticleSystem("particles", 20, scene);
-            particleSystem.particleTexture = new BABYLON.Texture("https://www.babylonjs-playground.com/textures/flare.png", scene);
+            
+            // Use fallback for texture in case external URL fails
+            try {
+                particleSystem.particleTexture = new BABYLON.Texture("https://www.babylonjs-playground.com/textures/flare.png", scene);
+            } catch (e) {
+                console.warn('Could not load particle texture, using default');
+            }
+            
             particleSystem.emitter = bird;
             particleSystem.minSize = 0.1;
             particleSystem.maxSize = 0.3;
@@ -849,10 +877,17 @@
         // Create scene
         scene = createScene();
         
-        // Load saved progress
-        const savedLevels = localStorage.getItem('unlockedLevels');
-        if (savedLevels) {
-            unlockedLevels = parseInt(savedLevels);
+        // Load saved progress with validation
+        try {
+            const savedLevels = localStorage.getItem('unlockedLevels');
+            if (savedLevels) {
+                const parsed = parseInt(savedLevels);
+                if (!isNaN(parsed) && parsed >= 1 && parsed <= 5) {
+                    unlockedLevels = parsed;
+                }
+            }
+        } catch (e) {
+            console.warn('Could not load progress from localStorage:', e);
         }
         
         // Show main menu initially
