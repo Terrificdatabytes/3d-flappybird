@@ -69,7 +69,7 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
             transition: background 0.3s;
         }
-        #restartBtn: hover {
+        #restartBtn:hover {
             background: #45a049;
         }
         #startScreen {
@@ -137,24 +137,24 @@
         const flapStrength = 0.45;
         const pipeSpeed = 0.1;
         const pipeSpacing = 8;
-        const gapSize = 3. 5;
+        const gapSize = 3.5;
         
         const createScene = function() {
             const scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON. Color4(0.53, 0.81, 0.92, 1);
+            scene.clearColor = new BABYLON.Color4(0.53, 0.81, 0.92, 1);
             
             // Camera
-            camera = new BABYLON. ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 3, 25, new BABYLON.Vector3(0, 0, 0), scene);
+            camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 3, 25, new BABYLON.Vector3(0, 0, 0), scene);
             camera.attachControl(canvas, false);
             camera.lowerRadiusLimit = 15;
             camera.upperRadiusLimit = 35;
             
             // Lighting
             const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-            light.intensity = 1. 2;
+            light.intensity = 1.2;
             
             const dirLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(-1, -2, -1), scene);
-            dirLight. position = new BABYLON.Vector3(10, 20, 10);
+            dirLight.position = new BABYLON.Vector3(10, 20, 10);
             dirLight.intensity = 0.7;
             
             // Bird
@@ -182,30 +182,30 @@
             // Beak
             const beak = BABYLON.MeshBuilder.CreateCylinder("beak", { height: 0.5, diameterTop: 0, diameterBottom: 0.3 }, scene);
             beak.parent = bird;
-            beak. position = new BABYLON.Vector3(0.5, 0, 0);
-            beak.rotation. z = Math.PI / 2;
+            beak.position = new BABYLON.Vector3(0.5, 0, 0);
+            beak.rotation.z = Math.PI / 2;
             const beakMat = new BABYLON.StandardMaterial("beakMat", scene);
             beakMat.diffuseColor = new BABYLON.Color3(1, 0.5, 0);
             beak.material = beakMat;
             
             // Ground
             ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 100, height: 10 }, scene);
-            ground. position. y = -6;
-            const groundMat = new BABYLON. StandardMaterial("groundMat", scene);
-            groundMat. diffuseColor = new BABYLON.Color3(0.13, 0.55, 0.13);
+            ground.position.y = -6;
+            const groundMat = new BABYLON.StandardMaterial("groundMat", scene);
+            groundMat.diffuseColor = new BABYLON.Color3(0.13, 0.55, 0.13);
             ground.material = groundMat;
             
             // Add some clouds
             for (let i = 0; i < 10; i++) {
-                const cloud = BABYLON.MeshBuilder. CreateSphere("cloud", { diameter: 2 }, scene);
+                const cloud = BABYLON.MeshBuilder.CreateSphere("cloud", { diameter: 2 }, scene);
                 cloud.position = new BABYLON.Vector3(
                     Math.random() * 40 - 20,
                     Math.random() * 3 + 3,
                     Math.random() * 20 - 10
                 );
                 cloud.scaling = new BABYLON.Vector3(2, 0.8, 1);
-                const cloudMat = new BABYLON. StandardMaterial("cloudMat", scene);
-                cloudMat. diffuseColor = new BABYLON.Color3(1, 1, 1);
+                const cloudMat = new BABYLON.StandardMaterial("cloudMat", scene);
+                cloudMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
                 cloudMat.alpha = 0.7;
                 cloud.material = cloudMat;
             }
@@ -219,7 +219,7 @@
             // Top pipe
             const topPipe = BABYLON.MeshBuilder.CreateCylinder("topPipe", { 
                 height: 10, 
-                diameter: 1. 5 
+                diameter: 1.5 
             }, scene);
             topPipe.position = new BABYLON.Vector3(x, gapY + gapSize/2 + 5, 0);
             
@@ -229,7 +229,7 @@
             
             // Top pipe cap
             const topCap = BABYLON.MeshBuilder.CreateCylinder("topCap", { 
-                height:  0.5, 
+                height: 0.5, 
                 diameter: 2 
             }, scene);
             topCap.position = new BABYLON.Vector3(x, gapY + gapSize/2 + 0.25, 0);
@@ -243,8 +243,8 @@
             bottomPipe.position = new BABYLON.Vector3(x, gapY - gapSize/2 - 5, 0);
             
             const bottomPipeMat = new BABYLON.StandardMaterial("bottomPipeMat", scene);
-            bottomPipeMat. diffuseColor = new BABYLON.Color3(0.2, 0.8, 0.2);
-            bottomPipe. material = bottomPipeMat;
+            bottomPipeMat.diffuseColor = new BABYLON.Color3(0.2, 0.8, 0.2);
+            bottomPipe.material = bottomPipeMat;
             
             // Bottom pipe cap
             const bottomCap = BABYLON.MeshBuilder.CreateCylinder("bottomCap", { 
@@ -280,11 +280,11 @@
             
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('gameOver').style.display = 'none';
-            document. getElementById('score').innerText = '0';
+            document.getElementById('score').innerText = '0';
             
             // Clear old pipes
             pipes.forEach(pipe => {
-                pipe.top. dispose();
+                pipe.top.dispose();
                 pipe.bottom.dispose();
                 pipe.topCap.dispose();
                 pipe.bottomCap.dispose();
@@ -370,7 +370,7 @@
                 bird.position.y += birdVelocity;
                 
                 // Rotate bird based on velocity
-                bird.rotation. z = birdVelocity * 0.5;
+                bird.rotation.z = birdVelocity * 0.5;
                 
                 // Update pipes
                 for (let i = pipes.length - 1; i >= 0; i--) {
@@ -378,13 +378,13 @@
                     pipe.top.position.x -= pipeSpeed;
                     pipe.bottom.position.x -= pipeSpeed;
                     pipe.topCap.position.x -= pipeSpeed;
-                    pipe. bottomCap.position.x -= pipeSpeed;
+                    pipe.bottomCap.position.x -= pipeSpeed;
                     
                     // Remove pipes that are off screen and create new ones
                     if (pipe.top.position.x < -15) {
                         pipe.top.dispose();
                         pipe.bottom.dispose();
-                        pipe. topCap.dispose();
+                        pipe.topCap.dispose();
                         pipe.bottomCap.dispose();
                         pipes.splice(i, 1);
                         
