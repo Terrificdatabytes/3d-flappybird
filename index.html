@@ -37,6 +37,7 @@
             color: white;
             text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
             font-weight: bold;
+            transition: transform 0.2s;
         }
         #gameOver {
             position: absolute;
@@ -105,21 +106,200 @@
         #startBtn:hover {
             background: #0b7dda;
         }
+        #controlHint {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            display: none;
+        }
+        #mainMenu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+        }
+        #mainMenu h1 {
+            font-size: 72px;
+            margin-bottom: 30px;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.8);
+        }
+        .menu-btn {
+            font-size: 24px;
+            padding: 15px 40px;
+            margin: 10px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            pointer-events: all;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: background 0.3s;
+            display: inline-block;
+        }
+        .menu-btn:hover {
+            background: #0b7dda;
+        }
+        #levelSelect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            display: none;
+        }
+        #levelSelect h2 {
+            font-size: 48px;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+        }
+        .level-btn {
+            font-size: 20px;
+            padding: 15px 30px;
+            margin: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            pointer-events: all;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: background 0.3s;
+            display: inline-block;
+            min-width: 150px;
+        }
+        .level-btn:hover {
+            background: #45a049;
+        }
+        .level-btn.locked {
+            background: #888;
+            cursor: not-allowed;
+        }
+        #creditsScreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            display: none;
+            max-width: 600px;
+        }
+        #creditsScreen h2 {
+            font-size: 48px;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+        }
+        #creditsScreen p {
+            font-size: 20px;
+            margin: 15px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        #musicToggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 32px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            pointer-events: all;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        #rewardPopup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            display: none;
+            pointer-events: all;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+        }
+        #rewardPopup h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+        }
+        #rewardPopup p {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        #levelInfo {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            display: none;
+        }
     </style>
 </head>
 <body>
     <canvas id="renderCanvas"></canvas>
     <div id="ui">
         <div id="score">0</div>
-        <div id="startScreen">
+        <div id="levelInfo">Level 1</div>
+        <div id="controlHint">👆 Click or press SPACE to flap</div>
+        <button id="musicToggle">🔊</button>
+        
+        <div id="mainMenu">
+            <h1>🐦 3D Flappy Bird</h1>
+            <button class="menu-btn" id="playBtn">PLAY</button>
+            <button class="menu-btn" id="levelsBtn">LEVELS</button>
+            <button class="menu-btn" id="creditsBtn">CREDITS</button>
+        </div>
+        
+        <div id="levelSelect">
+            <h2>Select Level</h2>
+            <div id="levelButtons"></div>
+            <button class="menu-btn" id="backFromLevels">BACK</button>
+        </div>
+        
+        <div id="creditsScreen">
+            <h2>Credits</h2>
+            <p><strong>Game Development:</strong> 3D Flappy Bird Team</p>
+            <p><strong>Engine:</strong> Babylon.js</p>
+            <p><strong>Music:</strong> Free music from Pixabay</p>
+            <p><strong>Sound Effects:</strong> Free SFX from Pixabay</p>
+            <p><strong>Inspired by:</strong> Original Flappy Bird by Dong Nguyen</p>
+            <p style="margin-top: 30px;">Made with ❤️ for the web</p>
+            <button class="menu-btn" id="backFromCredits">BACK</button>
+        </div>
+        
+        <div id="startScreen" style="display: none;">
             <h1>3D Flappy Bird</h1>
             <p>Click or press SPACE to flap</p>
             <button id="startBtn">START GAME</button>
         </div>
+        
         <div id="gameOver">
             <h1>GAME OVER</h1>
             <p>Score: <span id="finalScore">0</span></p>
             <button id="restartBtn">PLAY AGAIN</button>
+        </div>
+        
+        <div id="rewardPopup">
+            <h2>🎉 Level Complete!</h2>
+            <p id="rewardText">You unlocked Level 2!</p>
+            <button class="menu-btn" id="continueBtn">CONTINUE</button>
         </div>
     </div>
 
@@ -133,38 +313,96 @@
         let gameOver = false;
         let score = 0;
         let birdVelocity = 0;
-        const gravity = -0.015;
-        const flapStrength = 0.45;
-        const pipeSpeed = 0.1;
+        let particleSystem = null;
+        let currentLevel = 1;
+        let unlockedLevels = 1;
+        let musicEnabled = true;
+        let backgroundMusic = null;
+        let flapSound = null;
+        let scoreSound = null;
+        let gameOverSound = null;
+        let clouds = [];
+        let cloudCounter = 0;
+        
+        // Level configurations
+        const levels = {
+            1: { name: "Easy", gravity: -0.01, flapStrength: 0.5, pipeSpeed: 0.08, gapSize: 4.5, targetScore: 5, color: "#87CEEB" },
+            2: { name: "Normal", gravity: -0.012, flapStrength: 0.48, pipeSpeed: 0.09, gapSize: 4.0, targetScore: 10, color: "#FFB6C1" },
+            3: { name: "Hard", gravity: -0.014, flapStrength: 0.46, pipeSpeed: 0.1, gapSize: 3.5, targetScore: 15, color: "#98FB98" },
+            4: { name: "Expert", gravity: -0.015, flapStrength: 0.45, pipeSpeed: 0.11, gapSize: 3.0, targetScore: 20, color: "#DDA0DD" },
+            5: { name: "Master", gravity: -0.016, flapStrength: 0.44, pipeSpeed: 0.12, gapSize: 2.8, targetScore: 25, color: "#F0E68C" }
+        };
+        
+        let gravity = levels[currentLevel].gravity;
+        let flapStrength = levels[currentLevel].flapStrength;
+        let pipeSpeed = levels[currentLevel].pipeSpeed;
         const pipeSpacing = 8;
-        const gapSize = 3.5;
+        let gapSize = levels[currentLevel].gapSize;
         
         const createScene = function() {
             const scene = new BABYLON.Scene(engine);
+            
+            // Enhanced sky with realistic skybox
+            try {
+                const skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 1000.0}, scene);
+                const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+                skyboxMaterial.backFaceCulling = false;
+                skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("https://playground.babylonjs.com/textures/skybox", scene);
+                skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+                skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+                skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+                skybox.material = skyboxMaterial;
+            } catch (e) {
+                console.warn('Could not load skybox, using fallback color:', e);
+            }
+            
+            // Fallback to gradient if skybox fails
             scene.clearColor = new BABYLON.Color4(0.53, 0.81, 0.92, 1);
             
-            // Camera
+            // Initialize sounds
+            initSounds(scene);
+            
+            // Camera - Locked to prevent user rotation
             camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 3, 25, new BABYLON.Vector3(0, 0, 0), scene);
             camera.attachControl(canvas, false);
-            camera.lowerRadiusLimit = 15;
-            camera.upperRadiusLimit = 35;
+            camera.lowerRadiusLimit = 25;
+            camera.upperRadiusLimit = 25;
+            camera.lowerBetaLimit = Math.PI / 3;
+            camera.upperBetaLimit = Math.PI / 3;
+            camera.lowerAlphaLimit = -Math.PI / 2;
+            camera.upperAlphaLimit = -Math.PI / 2;
             
-            // Lighting
+            // Lighting - Enhanced for better visuals
             const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-            light.intensity = 1.2;
+            light.intensity = 1.5;
             
             const dirLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(-1, -2, -1), scene);
             dirLight.position = new BABYLON.Vector3(10, 20, 10);
-            dirLight.intensity = 0.7;
+            dirLight.intensity = 0.9;
             
-            // Bird
+            // Enable shadows for better depth
+            const shadowGenerator = new BABYLON.ShadowGenerator(1024, dirLight);
+            shadowGenerator.useBlurExponentialShadowMap = true;
+            
+            // Bird - Enhanced with vibrant materials and realistic texture
             bird = BABYLON.MeshBuilder.CreateSphere("bird", { diameter: 1 }, scene);
             bird.position = new BABYLON.Vector3(-5, 0, 0);
             
             const birdMaterial = new BABYLON.StandardMaterial("birdMat", scene);
-            birdMaterial.diffuseColor = new BABYLON.Color3(1, 0.8, 0);
-            birdMaterial.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+            
+            // Try to load realistic texture
+            try {
+                const birdTexture = new BABYLON.Texture("https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/textures/amiga.jpg", scene);
+                birdMaterial.diffuseTexture = birdTexture;
+            } catch (e) {
+                // Fallback to orange color
+                birdMaterial.diffuseColor = new BABYLON.Color3(1, 0.6, 0.1);
+            }
+            
+            birdMaterial.specularColor = new BABYLON.Color3(1, 1, 1);
+            birdMaterial.emissiveColor = new BABYLON.Color3(0.2, 0.1, 0); // Glow effect
             bird.material = birdMaterial;
+            shadowGenerator.addShadowCaster(bird);
             
             // Add eyes to bird
             const leftEye = BABYLON.MeshBuilder.CreateSphere("leftEye", { diameter: 0.2 }, scene);
@@ -188,71 +426,290 @@
             beakMat.diffuseColor = new BABYLON.Color3(1, 0.5, 0);
             beak.material = beakMat;
             
-            // Ground
+            // Ground - Enhanced with realistic grass texture
             ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 100, height: 10 }, scene);
             ground.position.y = -6;
             const groundMat = new BABYLON.StandardMaterial("groundMat", scene);
-            groundMat.diffuseColor = new BABYLON.Color3(0.13, 0.55, 0.13);
-            ground.material = groundMat;
             
-            // Add some clouds
+            // Try to load realistic grass texture
+            try {
+                const grassTexture = new BABYLON.Texture("https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/textures/grass.png", scene);
+                grassTexture.uScale = 20;
+                grassTexture.vScale = 20;
+                groundMat.diffuseTexture = grassTexture;
+            } catch (e) {
+                // Fallback to green color
+                groundMat.diffuseColor = new BABYLON.Color3(0.2, 0.6, 0.2);
+            }
+            
+            groundMat.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+            ground.material = groundMat;
+            ground.receiveShadows = true;
+            
+            // Add some initial clouds for atmosphere
             for (let i = 0; i < 10; i++) {
-                const cloud = BABYLON.MeshBuilder.CreateSphere("cloud", { diameter: 2 }, scene);
-                cloud.position = new BABYLON.Vector3(
-                    Math.random() * 40 - 20,
-                    Math.random() * 3 + 3,
-                    Math.random() * 20 - 10
-                );
-                cloud.scaling = new BABYLON.Vector3(2, 0.8, 1);
-                const cloudMat = new BABYLON.StandardMaterial("cloudMat", scene);
-                cloudMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
-                cloudMat.alpha = 0.7;
-                cloud.material = cloudMat;
+                createCloud(Math.random() * 40 - 20);
             }
             
             return scene;
         };
         
+        const createCloud = function(x) {
+            const cloud = BABYLON.MeshBuilder.CreateSphere("cloud" + cloudCounter++, { diameter: 2 }, scene);
+            cloud.position = new BABYLON.Vector3(
+                x,
+                Math.random() * 3 + 3,
+                Math.random() * 20 - 10
+            );
+            cloud.scaling = new BABYLON.Vector3(1.5 + Math.random(), 0.6 + Math.random() * 0.4, 0.8 + Math.random() * 0.4);
+            const cloudMat = new BABYLON.StandardMaterial("cloudMat" + cloudCounter, scene);
+            
+            // Try to load realistic cloud texture
+            try {
+                const cloudTexture = new BABYLON.Texture("https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/textures/cloud.png", scene);
+                cloudMat.diffuseTexture = cloudTexture;
+                // Note: Using same texture for opacity may cause rendering issues, but provides basic cloud effect
+            } catch (e) {
+                // Fallback to white color
+                cloudMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
+            }
+            
+            cloudMat.specularColor = new BABYLON.Color3(0, 0, 0);
+            cloudMat.alpha = 0.6 + Math.random() * 0.2;
+            cloud.material = cloudMat;
+            clouds.push(cloud);
+            return cloud;
+        };
+        
+        const initSounds = function(scene) {
+            // Background music - Free music from Pixabay
+            // Note: External audio URLs may have CORS or availability issues
+            try {
+                backgroundMusic = new BABYLON.Sound("bgMusic", "https://cdn.pixabay.com/download/audio/2022/03/10/audio_2d8e579ba8.mp3", scene, null, {
+                    loop: true,
+                    autoplay: false,
+                    volume: 0.3
+                });
+            } catch (e) {
+                console.warn('Could not load background music:', e);
+            }
+            
+            // Flap sound - Simple beep
+            try {
+                flapSound = new BABYLON.Sound("flap", "https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3", scene, null, {
+                    volume: 0.5
+                });
+            } catch (e) {
+                console.warn('Could not load flap sound:', e);
+            }
+            
+            // Score sound
+            try {
+                scoreSound = new BABYLON.Sound("score", "https://cdn.pixabay.com/download/audio/2021/08/04/audio_0694722a30.mp3", scene, null, {
+                    volume: 0.6
+                });
+            } catch (e) {
+                console.warn('Could not load score sound:', e);
+            }
+            
+            // Game over sound
+            try {
+                gameOverSound = new BABYLON.Sound("gameover", "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c3c5d0eb28.mp3", scene, null, {
+                    volume: 0.5
+                });
+            } catch (e) {
+                console.warn('Could not load game over sound:', e);
+            }
+        };
+        
+        const toggleMusic = function() {
+            musicEnabled = !musicEnabled;
+            document.getElementById('musicToggle').innerText = musicEnabled ? '🔊' : '🔇';
+            
+            if (backgroundMusic) {
+                if (musicEnabled && gameStarted && !gameOver) {
+                    backgroundMusic.play();
+                } else {
+                    backgroundMusic.stop();
+                }
+            }
+        };
+        
+        const showMainMenu = function() {
+            document.getElementById('mainMenu').style.display = 'block';
+            document.getElementById('levelSelect').style.display = 'none';
+            document.getElementById('creditsScreen').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('rewardPopup').style.display = 'none';
+            document.getElementById('controlHint').style.display = 'none';
+            document.getElementById('levelInfo').style.display = 'none';
+        };
+        
+        const showLevelSelect = function() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('levelSelect').style.display = 'block';
+            
+            // Generate level buttons
+            const levelButtonsDiv = document.getElementById('levelButtons');
+            levelButtonsDiv.innerHTML = '';
+            
+            for (let i = 1; i <= 5; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'level-btn' + (i > unlockedLevels ? ' locked' : '');
+                btn.innerText = `Level ${i} - ${levels[i].name}`;
+                btn.disabled = i > unlockedLevels;
+                
+                if (i <= unlockedLevels) {
+                    btn.addEventListener('click', function() {
+                        currentLevel = i;
+                        updateLevelSettings();
+                        document.getElementById('levelSelect').style.display = 'none';
+                        document.getElementById('startScreen').style.display = 'block';
+                    });
+                }
+                
+                levelButtonsDiv.appendChild(btn);
+            }
+        };
+        
+        const showCredits = function() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('creditsScreen').style.display = 'block';
+        };
+        
+        const updateLevelSettings = function() {
+            gravity = levels[currentLevel].gravity;
+            flapStrength = levels[currentLevel].flapStrength;
+            pipeSpeed = levels[currentLevel].pipeSpeed;
+            gapSize = levels[currentLevel].gapSize;
+            document.getElementById('levelInfo').innerText = `Level ${currentLevel} - ${levels[currentLevel].name}`;
+        };
+        
+        const showReward = function() {
+            if (currentLevel < 5) {
+                unlockedLevels = Math.max(unlockedLevels, currentLevel + 1);
+                document.getElementById('rewardText').innerText = `You unlocked Level ${currentLevel + 1}!`;
+                document.getElementById('rewardPopup').style.display = 'block';
+                
+                // Save progress to localStorage with error handling
+                try {
+                    localStorage.setItem('unlockedLevels', unlockedLevels);
+                } catch (e) {
+                    console.warn('Could not save progress to localStorage:', e);
+                }
+            } else {
+                document.getElementById('rewardText').innerText = 'You completed all levels! You are a master!';
+                document.getElementById('rewardPopup').style.display = 'block';
+            }
+        };
+        
+        const createFlapParticles = function() {
+            if (particleSystem) {
+                particleSystem.dispose();
+            }
+            
+            particleSystem = new BABYLON.ParticleSystem("particles", 20, scene);
+            
+            // Use fallback for texture in case external URL fails
+            try {
+                particleSystem.particleTexture = new BABYLON.Texture("https://www.babylonjs-playground.com/textures/flare.png", scene);
+            } catch (e) {
+                console.warn('Could not load particle texture, using default');
+            }
+            
+            particleSystem.emitter = bird;
+            particleSystem.minSize = 0.1;
+            particleSystem.maxSize = 0.3;
+            particleSystem.minLifeTime = 0.3;
+            particleSystem.maxLifeTime = 0.5;
+            particleSystem.emitRate = 100;
+            particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD;
+            particleSystem.direction1 = new BABYLON.Vector3(-1, -1, 0);
+            particleSystem.direction2 = new BABYLON.Vector3(-1, -0.5, 0);
+            particleSystem.minEmitPower = 1;
+            particleSystem.maxEmitPower = 2;
+            particleSystem.updateSpeed = 0.01;
+            particleSystem.color1 = new BABYLON.Color4(1, 0.8, 0.2, 1);
+            particleSystem.color2 = new BABYLON.Color4(1, 0.6, 0.1, 1);
+            particleSystem.colorDead = new BABYLON.Color4(1, 0.5, 0, 0);
+            
+            return particleSystem;
+        };
+        
         const createPipe = function(x) {
-            const gapY = Math.random() * 4 - 2;
+            // Enhanced procedural generation with varied patterns
+            const pattern = Math.floor(Math.random() * 3);
+            let gapY;
+            
+            // Different gap patterns for variety
+            if (pattern === 0) {
+                // Standard random gap
+                gapY = Math.random() * 4 - 2;
+            } else if (pattern === 1) {
+                // Sinusoidal pattern for wave-like pipes
+                gapY = Math.sin(x * 0.3) * 2;
+            } else {
+                // Stepped pattern
+                gapY = Math.floor(Math.random() * 3) * 1.5 - 2.25;
+            }
+            
+            // Procedurally vary pipe appearance
+            const greenShade = 0.6 + Math.random() * 0.2; // Vary green shade
+            const diameter = 1.4 + Math.random() * 0.2; // Slight diameter variation
+            
+            // Enhanced pipe material with realistic metal/pipe texture
+            const pipeMaterial = new BABYLON.StandardMaterial("pipeMat", scene);
+            
+            // Try to load realistic pipe/metal texture
+            try {
+                const pipeTexture = new BABYLON.Texture("https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/textures/floor.png", scene);
+                pipeTexture.uScale = 2;
+                pipeTexture.vScale = 4;
+                pipeMaterial.diffuseTexture = pipeTexture;
+                
+                // Add bump map for realism
+                const bumpTexture = new BABYLON.Texture("https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/textures/floor.png", scene);
+                pipeMaterial.bumpTexture = bumpTexture;
+            } catch (e) {
+                // Fallback to green color
+                pipeMaterial.diffuseColor = new BABYLON.Color3(0.15, greenShade, 0.15);
+            }
+            
+            pipeMaterial.specularColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+            pipeMaterial.specularPower = 64; // Glossy
             
             // Top pipe
             const topPipe = BABYLON.MeshBuilder.CreateCylinder("topPipe", { 
                 height: 10, 
-                diameter: 1.5 
+                diameter: diameter 
             }, scene);
             topPipe.position = new BABYLON.Vector3(x, gapY + gapSize/2 + 5, 0);
-            
-            const topPipeMat = new BABYLON.StandardMaterial("topPipeMat", scene);
-            topPipeMat.diffuseColor = new BABYLON.Color3(0.2, 0.8, 0.2);
-            topPipe.material = topPipeMat;
+            topPipe.material = pipeMaterial;
             
             // Top pipe cap
             const topCap = BABYLON.MeshBuilder.CreateCylinder("topCap", { 
                 height: 0.5, 
-                diameter: 2 
+                diameter: diameter + 0.5 
             }, scene);
             topCap.position = new BABYLON.Vector3(x, gapY + gapSize/2 + 0.25, 0);
-            topCap.material = topPipeMat;
+            topCap.material = pipeMaterial;
             
             // Bottom pipe
             const bottomPipe = BABYLON.MeshBuilder.CreateCylinder("bottomPipe", { 
                 height: 10, 
-                diameter: 1.5 
+                diameter: diameter 
             }, scene);
             bottomPipe.position = new BABYLON.Vector3(x, gapY - gapSize/2 - 5, 0);
-            
-            const bottomPipeMat = new BABYLON.StandardMaterial("bottomPipeMat", scene);
-            bottomPipeMat.diffuseColor = new BABYLON.Color3(0.2, 0.8, 0.2);
-            bottomPipe.material = bottomPipeMat;
+            bottomPipe.material = pipeMaterial;
             
             // Bottom pipe cap
             const bottomCap = BABYLON.MeshBuilder.CreateCylinder("bottomCap", { 
                 height: 0.5, 
-                diameter: 2 
+                diameter: diameter + 0.5 
             }, scene);
             bottomCap.position = new BABYLON.Vector3(x, gapY - gapSize/2 - 0.25, 0);
-            bottomCap.material = bottomPipeMat;
+            bottomCap.material = pipeMaterial;
             
             pipes.push({
                 top: topPipe,
@@ -268,6 +725,19 @@
             if (e) e.preventDefault();
             if (!gameStarted || gameOver) return;
             birdVelocity = flapStrength;
+            
+            // Play flap sound
+            if (flapSound && musicEnabled) {
+                flapSound.play();
+            }
+            
+            // Create particle effect on flap
+            if (particleSystem) {
+                particleSystem.start();
+                setTimeout(() => {
+                    if (particleSystem) particleSystem.stop();
+                }, 200);
+            }
         };
         
         const startGame = function(e) {
@@ -275,12 +745,28 @@
             gameStarted = true;
             gameOver = false;
             score = 0;
-            birdVelocity = 0;
             bird.position.y = 0;
+            
+            // Give initial flap to auto-start movement
+            birdVelocity = flapStrength * 0.5;
             
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('gameOver').style.display = 'none';
             document.getElementById('score').innerText = '0';
+            document.getElementById('controlHint').style.display = 'block';
+            document.getElementById('levelInfo').style.display = 'block';
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('rewardPopup').style.display = 'none';
+            
+            // Start background music
+            if (backgroundMusic && musicEnabled) {
+                backgroundMusic.play();
+            }
+            
+            // Initialize particle system
+            if (!particleSystem) {
+                createFlapParticles();
+            }
             
             // Clear old pipes
             pipes.forEach(pipe => {
@@ -301,6 +787,31 @@
             gameOver = true;
             document.getElementById('finalScore').innerText = score;
             document.getElementById('gameOver').style.display = 'block';
+            document.getElementById('controlHint').style.display = 'none';
+            document.getElementById('levelInfo').style.display = 'none';
+            
+            // Stop particle system
+            if (particleSystem) {
+                particleSystem.stop();
+            }
+            
+            // Stop background music
+            if (backgroundMusic) {
+                backgroundMusic.stop();
+            }
+            
+            // Play game over sound
+            if (gameOverSound && musicEnabled) {
+                gameOverSound.play();
+            }
+            
+            // Check if level target reached for reward
+            if (score >= levels[currentLevel].targetScore) {
+                setTimeout(() => {
+                    document.getElementById('gameOver').style.display = 'none';
+                    showReward();
+                }, 1500);
+            }
         };
         
         const checkCollision = function() {
@@ -334,11 +845,60 @@
                     pipe.scored = true;
                     score++;
                     document.getElementById('score').innerText = score;
+                    
+                    // Play score sound
+                    if (scoreSound && musicEnabled) {
+                        scoreSound.play();
+                    }
+                    
+                    // Add score popup animation
+                    const scoreElement = document.getElementById('score');
+                    scoreElement.style.transform = 'translateX(-50%) scale(1.3)';
+                    setTimeout(() => {
+                        scoreElement.style.transform = 'translateX(-50%) scale(1)';
+                    }, 200);
                 }
             }
         };
         
         // Event listeners - Fixed to work properly
+        document.getElementById('playBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'block';
+        });
+        
+        document.getElementById('levelsBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            showLevelSelect();
+        });
+        
+        document.getElementById('creditsBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            showCredits();
+        });
+        
+        document.getElementById('backFromLevels').addEventListener('click', function(e) {
+            e.stopPropagation();
+            showMainMenu();
+        });
+        
+        document.getElementById('backFromCredits').addEventListener('click', function(e) {
+            e.stopPropagation();
+            showMainMenu();
+        });
+        
+        document.getElementById('musicToggle').addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleMusic();
+        });
+        
+        document.getElementById('continueBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('rewardPopup').style.display = 'none';
+            showMainMenu();
+        });
+        
         document.getElementById('startBtn').addEventListener('click', function(e) {
             e.stopPropagation();
             startGame(e);
@@ -353,6 +913,11 @@
             flap(e);
         });
         
+        // Add touch support for mobile devices
+        canvas.addEventListener('touchstart', function(e) {
+            flap(e);
+        });
+        
         window.addEventListener('keydown', function(e) {
             if (e.code === 'Space') {
                 flap(e);
@@ -361,6 +926,22 @@
         
         // Create scene
         scene = createScene();
+        
+        // Load saved progress with robust validation
+        try {
+            const savedLevels = localStorage.getItem('unlockedLevels');
+            if (savedLevels) {
+                const parsed = parseInt(savedLevels, 10);
+                if (Number.isInteger(parsed) && parsed >= 1 && parsed <= 5) {
+                    unlockedLevels = parsed;
+                }
+            }
+        } catch (e) {
+            console.warn('Could not load progress from localStorage:', e);
+        }
+        
+        // Show main menu initially
+        showMainMenu();
         
         // Game loop
         engine.runRenderLoop(function() {
@@ -372,7 +953,7 @@
                 // Rotate bird based on velocity
                 bird.rotation.z = birdVelocity * 0.5;
                 
-                // Update pipes
+                // Update pipes with infinite procedural generation
                 for (let i = pipes.length - 1; i >= 0; i--) {
                     const pipe = pipes[i];
                     pipe.top.position.x -= pipeSpeed;
@@ -388,12 +969,29 @@
                         pipe.bottomCap.dispose();
                         pipes.splice(i, 1);
                         
-                        // Add new pipe
+                        // Add new pipe with infinite procedural generation
                         const lastPipe = pipes[pipes.length - 1];
                         if (lastPipe) {
                             createPipe(lastPipe.top.position.x + pipeSpacing);
                         }
                     }
+                }
+                
+                // Update clouds with infinite procedural generation
+                for (let i = clouds.length - 1; i >= 0; i--) {
+                    const cloud = clouds[i];
+                    cloud.position.x -= pipeSpeed * 0.3; // Clouds move slower for parallax effect
+                    
+                    // Remove clouds that are off screen
+                    if (cloud.position.x < -25) {
+                        cloud.dispose();
+                        clouds.splice(i, 1);
+                    }
+                }
+                
+                // Spawn new clouds infinitely
+                if (clouds.length < 15 && Math.random() < 0.02) {
+                    createCloud(20 + Math.random() * 10);
                 }
                 
                 // Check collisions
