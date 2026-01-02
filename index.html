@@ -321,6 +321,8 @@
         let flapSound = null;
         let scoreSound = null;
         let gameOverSound = null;
+        let clouds = [];
+        let cloudCounter = 0;
         
         // Level configurations
         const levels = {
@@ -420,22 +422,28 @@
             ground.material = groundMat;
             ground.receiveShadows = true;
             
-            // Add some clouds
+            // Add some initial clouds for atmosphere
             for (let i = 0; i < 10; i++) {
-                const cloud = BABYLON.MeshBuilder.CreateSphere("cloud", { diameter: 2 }, scene);
-                cloud.position = new BABYLON.Vector3(
-                    Math.random() * 40 - 20,
-                    Math.random() * 3 + 3,
-                    Math.random() * 20 - 10
-                );
-                cloud.scaling = new BABYLON.Vector3(2, 0.8, 1);
-                const cloudMat = new BABYLON.StandardMaterial("cloudMat", scene);
-                cloudMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
-                cloudMat.alpha = 0.7;
-                cloud.material = cloudMat;
+                createCloud(Math.random() * 40 - 20);
             }
             
             return scene;
+        };
+        
+        const createCloud = function(x) {
+            const cloud = BABYLON.MeshBuilder.CreateSphere("cloud" + cloudCounter++, { diameter: 2 }, scene);
+            cloud.position = new BABYLON.Vector3(
+                x,
+                Math.random() * 3 + 3,
+                Math.random() * 20 - 10
+            );
+            cloud.scaling = new BABYLON.Vector3(1.5 + Math.random(), 0.6 + Math.random() * 0.4, 0.8 + Math.random() * 0.4);
+            const cloudMat = new BABYLON.StandardMaterial("cloudMat" + cloudCounter, scene);
+            cloudMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
+            cloudMat.alpha = 0.6 + Math.random() * 0.2;
+            cloud.material = cloudMat;
+            clouds.push(cloud);
+            return cloud;
         };
         
         const initSounds = function(scene) {
@@ -567,18 +575,36 @@
         };
         
         const createPipe = function(x) {
-            const gapY = Math.random() * 4 - 2;
+            // Enhanced procedural generation with varied patterns
+            const pattern = Math.floor(Math.random() * 3);
+            let gapY;
             
-            // Enhanced pipe material
+            // Different gap patterns for variety
+            if (pattern === 0) {
+                // Standard random gap
+                gapY = Math.random() * 4 - 2;
+            } else if (pattern === 1) {
+                // Sinusoidal pattern for wave-like pipes
+                gapY = Math.sin(x * 0.3) * 2;
+            } else {
+                // Stepped pattern
+                gapY = Math.floor(Math.random() * 3) * 1.5 - 2.25;
+            }
+            
+            // Procedurally vary pipe appearance
+            const greenShade = 0.6 + Math.random() * 0.2; // Vary green shade
+            const diameter = 1.4 + Math.random() * 0.2; // Slight diameter variation
+            
+            // Enhanced pipe material with procedural variation
             const pipeMaterial = new BABYLON.StandardMaterial("pipeMat", scene);
-            pipeMaterial.diffuseColor = new BABYLON.Color3(0.15, 0.7, 0.15);
+            pipeMaterial.diffuseColor = new BABYLON.Color3(0.15, greenShade, 0.15);
             pipeMaterial.specularColor = new BABYLON.Color3(0.3, 0.3, 0.3);
             pipeMaterial.specularPower = 64; // Glossy
             
             // Top pipe
             const topPipe = BABYLON.MeshBuilder.CreateCylinder("topPipe", { 
                 height: 10, 
-                diameter: 1.5 
+                diameter: diameter 
             }, scene);
             topPipe.position = new BABYLON.Vector3(x, gapY + gapSize/2 + 5, 0);
             topPipe.material = pipeMaterial;
@@ -586,7 +612,7 @@
             // Top pipe cap
             const topCap = BABYLON.MeshBuilder.CreateCylinder("topCap", { 
                 height: 0.5, 
-                diameter: 2 
+                diameter: diameter + 0.5 
             }, scene);
             topCap.position = new BABYLON.Vector3(x, gapY + gapSize/2 + 0.25, 0);
             topCap.material = pipeMaterial;
@@ -594,7 +620,7 @@
             // Bottom pipe
             const bottomPipe = BABYLON.MeshBuilder.CreateCylinder("bottomPipe", { 
                 height: 10, 
-                diameter: 1.5 
+                diameter: diameter 
             }, scene);
             bottomPipe.position = new BABYLON.Vector3(x, gapY - gapSize/2 - 5, 0);
             bottomPipe.material = pipeMaterial;
@@ -602,7 +628,7 @@
             // Bottom pipe cap
             const bottomCap = BABYLON.MeshBuilder.CreateCylinder("bottomCap", { 
                 height: 0.5, 
-                diameter: 2 
+                diameter: diameter + 0.5 
             }, scene);
             bottomCap.position = new BABYLON.Vector3(x, gapY - gapSize/2 - 0.25, 0);
             bottomCap.material = pipeMaterial;
@@ -842,7 +868,7 @@
                 // Rotate bird based on velocity
                 bird.rotation.z = birdVelocity * 0.5;
                 
-                // Update pipes
+                // Update pipes with infinite procedural generation
                 for (let i = pipes.length - 1; i >= 0; i--) {
                     const pipe = pipes[i];
                     pipe.top.position.x -= pipeSpeed;
@@ -858,12 +884,29 @@
                         pipe.bottomCap.dispose();
                         pipes.splice(i, 1);
                         
-                        // Add new pipe
+                        // Add new pipe with infinite procedural generation
                         const lastPipe = pipes[pipes.length - 1];
                         if (lastPipe) {
                             createPipe(lastPipe.top.position.x + pipeSpacing);
                         }
                     }
+                }
+                
+                // Update clouds with infinite procedural generation
+                for (let i = clouds.length - 1; i >= 0; i--) {
+                    const cloud = clouds[i];
+                    cloud.position.x -= pipeSpeed * 0.3; // Clouds move slower for parallax effect
+                    
+                    // Remove clouds that are off screen
+                    if (cloud.position.x < -25) {
+                        cloud.dispose();
+                        clouds.splice(i, 1);
+                    }
+                }
+                
+                // Spawn new clouds infinitely
+                if (clouds.length < 15 && Math.random() < 0.02) {
+                    createCloud(20 + Math.random() * 10);
                 }
                 
                 // Check collisions
