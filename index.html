@@ -343,14 +343,18 @@
             const scene = new BABYLON.Scene(engine);
             
             // Enhanced sky with realistic skybox
-            const skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 1000.0}, scene);
-            const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
-            skyboxMaterial.backFaceCulling = false;
-            skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("https://playground.babylonjs.com/textures/skybox", scene);
-            skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-            skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-            skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-            skybox.material = skyboxMaterial;
+            try {
+                const skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 1000.0}, scene);
+                const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+                skyboxMaterial.backFaceCulling = false;
+                skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("https://playground.babylonjs.com/textures/skybox", scene);
+                skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+                skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+                skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+                skybox.material = skyboxMaterial;
+            } catch (e) {
+                console.warn('Could not load skybox, using fallback color:', e);
+            }
             
             // Fallback to gradient if skybox fails
             scene.clearColor = new BABYLON.Color4(0.53, 0.81, 0.92, 1);
@@ -464,7 +468,7 @@
             try {
                 const cloudTexture = new BABYLON.Texture("https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/textures/cloud.png", scene);
                 cloudMat.diffuseTexture = cloudTexture;
-                cloudMat.opacityTexture = cloudTexture;
+                // Note: Using same texture for opacity may cause rendering issues, but provides basic cloud effect
             } catch (e) {
                 // Fallback to white color
                 cloudMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
@@ -923,12 +927,12 @@
         // Create scene
         scene = createScene();
         
-        // Load saved progress with validation
+        // Load saved progress with robust validation
         try {
             const savedLevels = localStorage.getItem('unlockedLevels');
             if (savedLevels) {
-                const parsed = parseInt(savedLevels);
-                if (!isNaN(parsed) && parsed >= 1 && parsed <= 5) {
+                const parsed = parseInt(savedLevels, 10);
+                if (Number.isInteger(parsed) && parsed >= 1 && parsed <= 5) {
                     unlockedLevels = parsed;
                 }
             }
