@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Flappy Bird - Babylon.js</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        body {
+            width: 100vw;
+            height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+        #ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        #score {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 48px;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+            font-weight: bold;
+        }
+        #gameOver {
+            position: absolute;
+            top:  50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            display: none;
+        }
+        #gameOver h1 {
+            font-size:  72px;
+            margin-bottom: 20px;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.8);
+        }
+        #gameOver p {
+            font-size: 36px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        #restartBtn {
+            font-size: 28px;
+            padding: 15px 40px;
+            background:  #4CAF50;
+            color: white;
+            border:  none;
+            border-radius:  10px;
+            cursor: pointer;
+            pointer-events: all;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: background 0.3s;
+        }
+        #restartBtn: hover {
+            background: #45a049;
+        }
+        #startScreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+        }
+        #startScreen h1 {
+            font-size:  64px;
+            margin-bottom:  20px;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.8);
+        }
+        #startScreen p {
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-shadow:  2px 2px 4px rgba(0,0,0,0.8);
+        }
+        #startBtn {
+            font-size: 32px;
+            padding: 20px 50px;
+            background: #2196F3;
+            color:  white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            pointer-events: all;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: background 0.3s;
+        }
+        #startBtn:hover {
+            background: #0b7dda;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <div id="ui">
+        <div id="score">0</div>
+        <div id="startScreen">
+            <h1>3D Flappy Bird</h1>
+            <p>Click or press SPACE to flap</p>
+            <button id="startBtn">START GAME</button>
+        </div>
+        <div id="gameOver">
+            <h1>GAME OVER</h1>
+            <p>Score: <span id="finalScore">0</span></p>
+            <button id="restartBtn">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        
+        let scene, camera, bird, pipes = [], ground;
+        let gameStarted = false;
+        let gameOver = false;
+        let score = 0;
+        let birdVelocity = 0;
+        const gravity = -0.015;
+        const flapStrength = 0.45;
+        const pipeSpeed = 0.1;
+        const pipeSpacing = 8;
+        const gapSize = 3. 5;
+        
+        const createScene = function() {
+            const scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON. Color3(0.53, 0.81, 0.92);
+            
+            // Camera
+            camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 3, 25, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 15;
+            camera.upperRadiusLimit = 35;
+            
+            // Lighting
+            const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+            light.intensity = 0.8;
+            
+            const dirLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(-1, -2, -1), scene);
+            dirLight.position = new BABYLON.Vector3(10, 20, 10);
+            dirLight.intensity = 0.5;
+            
+            // Bird
+            bird = BABYLON.MeshBuilder.CreateSphere("bird", { diameter: 1 }, scene);
+            bird.position = new BABYLON.Vector3(-5, 0, 0);
+            
+            const birdMaterial = new BABYLON.StandardMaterial("birdMat", scene);
+            birdMaterial.diffuseColor = new BABYLON.Color3(1, 0.8, 0);
+            birdMaterial. specularColor = new BABYLON. Color3(0.5, 0.5, 0.5);
+            bird.material = birdMaterial;
+            
+            // Add eyes to bird
+            const leftEye = BABYLON.MeshBuilder.CreateSphere("leftEye", { diameter: 0.2 }, scene);
+            leftEye.parent = bird;
+            leftEye.position = new BABYLON.Vector3(0.3, 0.15, 0.4);
+            const eyeMat = new BABYLON.StandardMaterial("eyeMat", scene);
+            eyeMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
+            leftEye.material = eyeMat;
+            
+            const rightEye = BABYLON.MeshBuilder.CreateSphere("rightEye", { diameter: 0.2 }, scene);
+            rightEye.parent = bird;
+            rightEye.position = new BABYLON.Vector3(0.3, 0.15, -0.4);
+            rightEye.material = eyeMat;
+            
+            // Beak
+            const beak = BABYLON.MeshBuilder.CreateCylinder("beak", { height: 0.5, diameterTop: 0, diameterBottom: 0.3 }, scene);
+            beak.parent = bird;
+            beak. position = new BABYLON.Vector3(0.5, 0, 0);
+            beak.rotation. z = Math.PI / 2;
+            const beakMat = new BABYLON.StandardMaterial("beakMat", scene);
+            beakMat.diffuseColor = new BABYLON.Color3(1, 0.5, 0);
+            beak.material = beakMat;
+            
+            // Ground
+            ground = BABYLON.MeshBuilder. CreateGround("ground", { width: 100, height: 10 }, scene);
+            ground. position. y = -6;
+            const groundMat = new BABYLON. StandardMaterial("groundMat", scene);
+            groundMat. diffuseColor = new BABYLON.Color3(0.13, 0.55, 0.13);
+            ground.material = groundMat;
+            
+            // Ceiling (invisible collision)
+            const ceiling = BABYLON. MeshBuilder.CreateGround("ceiling", { width: 100, height: 10 }, scene);
+            ceiling.position.y = 6;
+            ceiling.isVisible = false;
+            
+            // Sky
+            const skybox = BABYLON.MeshBuilder. CreateBox("skyBox", { size: 1000.0 }, scene);
+            const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+            skyboxMaterial.backFaceCulling = false;
+            skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+            skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+            skyboxMaterial.emissiveColor = new BABYLON.Color3(0. 53, 0.81, 0.92);
+            skybox. material = skyboxMaterial;
+            
+            return scene;
+        };
+        
+        const createPipe = function(x) {
+            const gapY = Math.random() * 4 - 2; // Random height between -2 and 2
+            
+            // Top pipe
+            const topPipe = BABYLON.MeshBuilder.CreateCylinder("topPipe", { 
+                height: 10, 
+                diameter: 1. 5 
+            }, scene);
+            topPipe.position = new BABYLON. Vector3(x, gapY + gapSize/2 + 5, 0);
+            
+            const topPipeMat = new BABYLON.StandardMaterial("topPipeMat", scene);
+            topPipeMat.diffuseColor = new BABYLON.Color3(0.2, 0.8, 0.2);
+            topPipe.material = topPipeMat;
+            
+            // Top pipe cap
+            const topCap = BABYLON.MeshBuilder.CreateCylinder("topCap", { 
+                height:  0.5, 
+                diameter: 2 
+            }, scene);
+            topCap.position = new BABYLON.Vector3(x, gapY + gapSize/2 + 0.25, 0);
+            topCap.material = topPipeMat;
+            
+            // Bottom pipe
+            const bottomPipe = BABYLON.MeshBuilder.CreateCylinder("bottomPipe", { 
+                height: 10, 
+                diameter: 1.5 
+            }, scene);
+            bottomPipe.position = new BABYLON.Vector3(x, gapY - gapSize/2 - 5, 0);
+            
+            const bottomPipeMat = new BABYLON.StandardMaterial("bottomPipeMat", scene);
+            bottomPipeMat. diffuseColor = new BABYLON.Color3(0.2, 0.8, 0.2);
+            bottomPipe. material = bottomPipeMat;
+            
+            // Bottom pipe cap
+            const bottomCap = BABYLON.MeshBuilder.CreateCylinder("bottomCap", { 
+                height: 0.5, 
+                diameter: 2 
+            }, scene);
+            bottomCap.position = new BABYLON.Vector3(x, gapY - gapSize/2 - 0.25, 0);
+            bottomCap.material = bottomPipeMat;
+            
+            pipes.push({
+                top: topPipe,
+                bottom: bottomPipe,
+                topCap: topCap,
+                bottomCap: bottomCap,
+                scored: false,
+                gapY: gapY
+            });
+        };
+        
+        const flap = function() {
+            if (!gameStarted || gameOver) return;
+            birdVelocity = flapStrength;
+        };
+        
+        const startGame = function() {
+            gameStarted = true;
+            gameOver = false;
+            score = 0;
+            birdVelocity = 0;
+            bird.position.y = 0;
+            
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('score').innerText = '0';
+            
+            // Clear old pipes
+            pipes.forEach(pipe => {
+                pipe.top. dispose();
+                pipe.bottom. dispose();
+                pipe.topCap.dispose();
+                pipe. bottomCap.dispose();
+            });
+            pipes = [];
+            
+            // Create initial pipes
+            for (let i = 0; i < 5; i++) {
+                createPipe(5 + i * pipeSpacing);
+            }
+        };
+        
+        const endGame = function() {
+            gameOver = true;
+            document.getElementById('finalScore').innerText = score;
+            document.getElementById('gameOver').style.display = 'block';
+        };
+        
+        const checkCollision = function() {
+            // Check ground and ceiling collision
+            if (bird.position.y < -5.5 || bird.position.y > 5.5) {
+                return true;
+            }
+            
+            // Check pipe collision
+            for (let pipe of pipes) {
+                const dx = Math.abs(bird.position.x - pipe.top.position.x);
+                
+                if (dx < 1.25) { // Bird is at pipe's x position
+                    const birdTop = bird.position.y + 0.5;
+                    const birdBottom = bird.position.y - 0.5;
+                    const gapTop = pipe.gapY + gapSize/2;
+                    const gapBottom = pipe.gapY - gapSize/2;
+                    
+                    if (birdTop > gapTop || birdBottom < gapBottom) {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        };
+        
+        const updateScore = function() {
+            for (let pipe of pipes) {
+                if (!pipe.scored && bird.position.x > pipe.top.position.x) {
+                    pipe.scored = true;
+                    score++;
+                    document.getElementById('score').innerText = score;
+                }
+            }
+        };
+        
+        // Event listeners
+        canvas.addEventListener('click', flap);
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                flap();
+            }
+        });
+        
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('restartBtn').addEventListener('click', startGame);
+        
+        // Create scene
+        scene = createScene();
+        
+        // Game loop
+        engine.runRenderLoop(function() {
+            if (gameStarted && !gameOver) {
+                // Update bird physics
+                birdVelocity += gravity;
+                bird.position.y += birdVelocity;
+                
+                // Rotate bird based on velocity
+                bird.rotation. z = birdVelocity * 0.5;
+                
+                // Update pipes
+                for (let i = pipes.length - 1; i >= 0; i--) {
+                    const pipe = pipes[i];
+                    pipe.top.position.x -= pipeSpeed;
+                    pipe.bottom.position.x -= pipeSpeed;
+                    pipe.topCap.position.x -= pipeSpeed;
+                    pipe. bottomCap.position.x -= pipeSpeed;
+                    
+                    // Remove pipes that are off screen and create new ones
+                    if (pipe.top.position.x < -15) {
+                        pipe.top.dispose();
+                        pipe.bottom.dispose();
+                        pipe. topCap.dispose();
+                        pipe.bottomCap.dispose();
+                        pipes.splice(i, 1);
+                        
+                        // Add new pipe
+                        const lastPipe = pipes[pipes.length - 1];
+                        if (lastPipe) {
+                            createPipe(lastPipe.top.position. x + pipeSpacing);
+                        }
+                    }
+                }
+                
+                // Check collisions
+                if (checkCollision()) {
+                    endGame();
+                }
+                
+                // Update score
+                updateScore();
+                
+                // Update camera to follow bird smoothly
+                camera.target. y = bird.position.y * 0.3;
+            }
+            
+            scene.render();
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            engine.resize();
+        });
+    </script>
+</body>
+</html>
