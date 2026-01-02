@@ -8,17 +8,17 @@
         * {
             margin: 0;
             padding: 0;
-            overflow: hidden;
         }
-        body {
-            width: 100vw;
-            height: 100vh;
-            font-family: 'Arial', sans-serif;
+        html, body {
+            width: 100%;
+            height:  100%;
+            overflow: hidden;
         }
         #renderCanvas {
             width: 100%;
             height: 100%;
             touch-action: none;
+            display: block;
         }
         #ui {
             position: absolute;
@@ -54,16 +54,16 @@
         }
         #gameOver p {
             font-size: 36px;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            margin-bottom:  30px;
+            text-shadow:  2px 2px 4px rgba(0,0,0,0.8);
         }
         #restartBtn {
             font-size: 28px;
             padding: 15px 40px;
-            background:  #4CAF50;
+            background: #4CAF50;
             color: white;
-            border:  none;
-            border-radius:  10px;
+            border: none;
+            border-radius: 10px;
             cursor: pointer;
             pointer-events: all;
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
@@ -88,7 +88,7 @@
         #startScreen p {
             font-size: 24px;
             margin-bottom: 30px;
-            text-shadow:  2px 2px 4px rgba(0,0,0,0.8);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
         #startBtn {
             font-size: 32px;
@@ -126,7 +126,7 @@
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script>
         const canvas = document.getElementById("renderCanvas");
-        const engine = new BABYLON.Engine(canvas, true);
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
         
         let scene, camera, bird, pipes = [], ground;
         let gameStarted = false;
@@ -141,21 +141,21 @@
         
         const createScene = function() {
             const scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON. Color3(0.53, 0.81, 0.92);
+            scene.clearColor = new BABYLON. Color4(0.53, 0.81, 0.92, 1);
             
             // Camera
-            camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 3, 25, new BABYLON.Vector3(0, 0, 0), scene);
-            camera.attachControl(canvas, true);
+            camera = new BABYLON. ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 3, 25, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, false);
             camera.lowerRadiusLimit = 15;
             camera.upperRadiusLimit = 35;
             
             // Lighting
             const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-            light.intensity = 0.8;
+            light.intensity = 1. 2;
             
             const dirLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(-1, -2, -1), scene);
-            dirLight.position = new BABYLON.Vector3(10, 20, 10);
-            dirLight.intensity = 0.5;
+            dirLight. position = new BABYLON.Vector3(10, 20, 10);
+            dirLight.intensity = 0.7;
             
             // Bird
             bird = BABYLON.MeshBuilder.CreateSphere("bird", { diameter: 1 }, scene);
@@ -163,7 +163,7 @@
             
             const birdMaterial = new BABYLON.StandardMaterial("birdMat", scene);
             birdMaterial.diffuseColor = new BABYLON.Color3(1, 0.8, 0);
-            birdMaterial. specularColor = new BABYLON. Color3(0.5, 0.5, 0.5);
+            birdMaterial.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
             bird.material = birdMaterial;
             
             // Add eyes to bird
@@ -189,38 +189,39 @@
             beak.material = beakMat;
             
             // Ground
-            ground = BABYLON.MeshBuilder. CreateGround("ground", { width: 100, height: 10 }, scene);
+            ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 100, height: 10 }, scene);
             ground. position. y = -6;
             const groundMat = new BABYLON. StandardMaterial("groundMat", scene);
             groundMat. diffuseColor = new BABYLON.Color3(0.13, 0.55, 0.13);
             ground.material = groundMat;
             
-            // Ceiling (invisible collision)
-            const ceiling = BABYLON. MeshBuilder.CreateGround("ceiling", { width: 100, height: 10 }, scene);
-            ceiling.position.y = 6;
-            ceiling.isVisible = false;
-            
-            // Sky
-            const skybox = BABYLON.MeshBuilder. CreateBox("skyBox", { size: 1000.0 }, scene);
-            const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
-            skyboxMaterial.backFaceCulling = false;
-            skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-            skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-            skyboxMaterial.emissiveColor = new BABYLON.Color3(0. 53, 0.81, 0.92);
-            skybox. material = skyboxMaterial;
+            // Add some clouds
+            for (let i = 0; i < 10; i++) {
+                const cloud = BABYLON.MeshBuilder. CreateSphere("cloud", { diameter: 2 }, scene);
+                cloud.position = new BABYLON.Vector3(
+                    Math.random() * 40 - 20,
+                    Math.random() * 3 + 3,
+                    Math.random() * 20 - 10
+                );
+                cloud.scaling = new BABYLON.Vector3(2, 0.8, 1);
+                const cloudMat = new BABYLON. StandardMaterial("cloudMat", scene);
+                cloudMat. diffuseColor = new BABYLON.Color3(1, 1, 1);
+                cloudMat.alpha = 0.7;
+                cloud.material = cloudMat;
+            }
             
             return scene;
         };
         
         const createPipe = function(x) {
-            const gapY = Math.random() * 4 - 2; // Random height between -2 and 2
+            const gapY = Math.random() * 4 - 2;
             
             // Top pipe
             const topPipe = BABYLON.MeshBuilder.CreateCylinder("topPipe", { 
                 height: 10, 
                 diameter: 1. 5 
             }, scene);
-            topPipe.position = new BABYLON. Vector3(x, gapY + gapSize/2 + 5, 0);
+            topPipe.position = new BABYLON.Vector3(x, gapY + gapSize/2 + 5, 0);
             
             const topPipeMat = new BABYLON.StandardMaterial("topPipeMat", scene);
             topPipeMat.diffuseColor = new BABYLON.Color3(0.2, 0.8, 0.2);
@@ -263,12 +264,14 @@
             });
         };
         
-        const flap = function() {
+        const flap = function(e) {
+            if (e) e.preventDefault();
             if (!gameStarted || gameOver) return;
             birdVelocity = flapStrength;
         };
         
-        const startGame = function() {
+        const startGame = function(e) {
+            if (e) e.preventDefault();
             gameStarted = true;
             gameOver = false;
             score = 0;
@@ -277,14 +280,14 @@
             
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('gameOver').style.display = 'none';
-            document.getElementById('score').innerText = '0';
+            document. getElementById('score').innerText = '0';
             
             // Clear old pipes
             pipes.forEach(pipe => {
                 pipe.top. dispose();
-                pipe.bottom. dispose();
+                pipe.bottom.dispose();
                 pipe.topCap.dispose();
-                pipe. bottomCap.dispose();
+                pipe.bottomCap.dispose();
             });
             pipes = [];
             
@@ -310,7 +313,7 @@
             for (let pipe of pipes) {
                 const dx = Math.abs(bird.position.x - pipe.top.position.x);
                 
-                if (dx < 1.25) { // Bird is at pipe's x position
+                if (dx < 1.25) {
                     const birdTop = bird.position.y + 0.5;
                     const birdBottom = bird.position.y - 0.5;
                     const gapTop = pipe.gapY + gapSize/2;
@@ -335,17 +338,26 @@
             }
         };
         
-        // Event listeners
-        canvas.addEventListener('click', flap);
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                flap();
-            }
+        // Event listeners - Fixed to work properly
+        document.getElementById('startBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            startGame(e);
         });
         
-        document.getElementById('startBtn').addEventListener('click', startGame);
-        document.getElementById('restartBtn').addEventListener('click', startGame);
+        document.getElementById('restartBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            startGame(e);
+        });
+        
+        canvas.addEventListener('click', function(e) {
+            flap(e);
+        });
+        
+        window.addEventListener('keydown', function(e) {
+            if (e.code === 'Space') {
+                flap(e);
+            }
+        });
         
         // Create scene
         scene = createScene();
@@ -379,7 +391,7 @@
                         // Add new pipe
                         const lastPipe = pipes[pipes.length - 1];
                         if (lastPipe) {
-                            createPipe(lastPipe.top.position. x + pipeSpacing);
+                            createPipe(lastPipe.top.position.x + pipeSpacing);
                         }
                     }
                 }
@@ -393,7 +405,7 @@
                 updateScore();
                 
                 // Update camera to follow bird smoothly
-                camera.target. y = bird.position.y * 0.3;
+                camera.target.y = bird.position.y * 0.3;
             }
             
             scene.render();
